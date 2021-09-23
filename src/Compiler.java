@@ -36,7 +36,7 @@ public class Compiler {
     }
 
     for (int i = 0; i < this.input.length; i++) {
-      nextToken();
+      this.nextToken();
     }
   }
 
@@ -51,9 +51,9 @@ public class Compiler {
     char currCharacter = this.input[this.tokenPos];
 
     if (Character.isLetter(currCharacter)) {
-      getWord();
+      this.getWord();
     } else if (Character.isDigit(currCharacter)) {
-      getNumber();
+      this.getNumber();
     } else {
       switch (currCharacter) {
       case '+':
@@ -183,6 +183,96 @@ public class Compiler {
     System.out.println(Integer.valueOf(number.toString()));
   }
 
+  private void stat() {
+    switch (this.token) {
+    case ID:
+      this.assignStat();
+      break;
+
+    case FOR:
+      this.forStat();
+      break;
+
+    case WHILE:
+      this.whileStat();
+      break;
+
+    case PRINT:
+      this.printStat();
+      break;
+
+    case PRINTLN:
+      this.printlnStat();
+      break;
+
+    case IF:
+      this.ifStat();
+      break;
+
+    default:
+      error("Error: expected a statement.");
+      break;
+    }
+  }
+
+  private void statList() {
+    if (this.token != Symbol.LEFT_B)
+      error("Error: expected '{'.");
+
+    this.nextToken();
+
+    while (this.token == Symbol.ID || this.token == Symbol.FOR || this.token == Symbol.WHILE
+        || this.token == Symbol.PRINT || this.token == Symbol.PRINTLN || this.token == Symbol.IF) {
+      this.stat();
+    }
+
+    if (this.token != Symbol.RIGHT_B)
+      error("Error: expected '}'.");
+
+    this.nextToken();
+  }
+
+  private void program() {
+    if (this.token != Symbol.LEFT_B)
+      error("Error: expected '{'.");
+
+    try {
+      while (this.token != Symbol.RIGHT_B)
+        this.varList();
+    } catch (Exception e) {
+      error("Error: expected a valid input.");
+    }
+
+    while (token == Symbol.ID || token == Symbol.FOR || token == Symbol.PRINT || token == Symbol.PRINTLN
+        || token == Symbol.WHILE || token == Symbol.IF) {
+      this.stat();
+    }
+  }
+
+  private void varList() {
+    if (this.token != Symbol.VAR)
+      error("Error: expected 'var'.");
+
+    this.nextToken();
+
+    if (this.token != Symbol.INT)
+      error("Error: expected 'int'.");
+
+    this.nextToken();
+
+    if (this.token != Symbol.ID)
+      error("Error: expected an identifier.");
+
+    // Armazenar identificador
+
+    this.nextToken();
+
+    if (this.token != Symbol.SEMICOLON)
+      error("Error: expected ';'.");
+
+    this.nextToken();
+  }
+
   private void assignStat() {
     char identifier = this.identifier;
 
@@ -232,6 +322,8 @@ public class Compiler {
       if (this.token != Symbol.RANGE)
         error("Error: expected '..'.");
 
+      this.nextToken();
+
       // Expression
     } else {
       error("Error: expected an identifier.");
@@ -277,6 +369,30 @@ public class Compiler {
       error("Error: expected ';'.");
 
     this.nextToken();
+  }
+
+  private void expr() {
+
+  }
+
+  private void andExpr() {
+
+  }
+
+  private void relExpr() {
+
+  }
+
+  private void addExpr() {
+
+  }
+
+  private void multExpr() {
+
+  }
+
+  private void simpleExpr() {
+
   }
 
   private void error(String errorMessage) {
