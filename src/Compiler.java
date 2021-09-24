@@ -1,4 +1,8 @@
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
+
+import ast.Statement;
 
 public class Compiler {
   Symbol token;
@@ -22,6 +26,54 @@ public class Compiler {
     keywordsTable.put("or", Symbol.OR);
     keywordsTable.put("for", Symbol.FOR);
     keywordsTable.put("while", Symbol.WHILE);
+  }
+
+  public class Program {
+    private List<Statement> statList;
+
+    public Program(List<Statement> statList) {
+      super();
+      this.statList = statList;
+    }
+  }
+
+  /*
+   * private Program program() { List<Variable> varList = new ArrayList();
+   * List<Statement> statList = new ArrayList<>(); statList.add(this.stat());
+   * 
+   * while (this.token == Symbol.VAR) varList.add(this.varList());
+   * 
+   * while (token == Symbol.ID || token == Symbol.FOR || token == Symbol.PRINT ||
+   * token == Symbol.PRINTLN || token == Symbol.WHILE || token == Symbol.IF) {
+   * statList.add(this.stat());
+   * 
+   * return new Program(statList); }
+   */
+
+  private void varList() {
+    if (this.token != Symbol.VAR)
+      error("Error: expected 'var'.");
+
+    this.nextToken();
+
+    if (this.token != Symbol.INT)
+      error("Error: expected 'int'.");
+
+    this.nextToken();
+
+    if (this.token != Symbol.ID)
+      error("Error: expected an identifier.");
+
+    // Pegar o identificador (talvez com getWord)
+
+    this.nextToken();
+
+    if (this.token != Symbol.SEMICOLON)
+      error("Error: expected ';'.");
+
+    this.nextToken();
+
+    // Criar objeto da classe Variable
   }
 
   public Compiler(char[] expr) {
@@ -232,47 +284,6 @@ public class Compiler {
     this.nextToken();
   }
 
-  private void program() {
-    if (this.token != Symbol.LEFT_B)
-      error("Error: expected '{'.");
-
-    try {
-      while (this.token != Symbol.RIGHT_B)
-        this.varList();
-    } catch (Exception e) {
-      error("Error: expected a valid input.");
-    }
-
-    while (token == Symbol.ID || token == Symbol.FOR || token == Symbol.PRINT || token == Symbol.PRINTLN
-        || token == Symbol.WHILE || token == Symbol.IF) {
-      this.stat();
-    }
-  }
-
-  private void varList() {
-    if (this.token != Symbol.VAR)
-      error("Error: expected 'var'.");
-
-    this.nextToken();
-
-    if (this.token != Symbol.INT)
-      error("Error: expected 'int'.");
-
-    this.nextToken();
-
-    if (this.token != Symbol.ID)
-      error("Error: expected an identifier.");
-
-    // Armazenar identificador
-
-    this.nextToken();
-
-    if (this.token != Symbol.SEMICOLON)
-      error("Error: expected ';'.");
-
-    this.nextToken();
-  }
-
   private void assignStat() {
     char identifier = this.identifier;
 
@@ -308,7 +319,7 @@ public class Compiler {
     this.nextToken();
 
     if (this.token == Symbol.ID) {
-      char identifier = this.identifier;
+      this.getWord();
 
       this.nextToken();
 
@@ -317,17 +328,18 @@ public class Compiler {
 
       this.nextToken();
 
-      // Expression
+      this.expr();
 
       if (this.token != Symbol.RANGE)
         error("Error: expected '..'.");
 
       this.nextToken();
 
-      // Expression
+      this.expr();
     } else {
       error("Error: expected an identifier.");
     }
+
   }
 
   private void whileStat() {
@@ -371,24 +383,35 @@ public class Compiler {
     this.nextToken();
   }
 
+  // Expr ::= AndExpr [ "||" AndExpr ]
   private void expr() {
+    this.andExpr();
 
+    if (this.token == Symbol.OR)
+      this.andExpr();
   }
 
   private void andExpr() {
+    this.relExpr();
 
+    if (this.token == Symbol.AND)
+      this.andExpr();
   }
 
   private void relExpr() {
+    this.addExpr();
 
+    if (this.token == Symbol.GREATER || this.token == Symbol.GREATER_E || this.token == Symbol.LESS
+        || this.token == Symbol.LESS_E || this.token == Symbol.EQUAL || this.token == Symbol.DIFF)
+      this.addExpr();
   }
 
   private void addExpr() {
-
+    this.multExpr();
   }
 
   private void multExpr() {
-
+    this.simpleExpr();
   }
 
   private void simpleExpr() {
