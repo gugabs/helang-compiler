@@ -26,8 +26,11 @@ public class Compiler {
     keywordsTable.put("or", Symbol.OR);
     keywordsTable.put("for", Symbol.FOR);
     keywordsTable.put("while", Symbol.WHILE);
+    keywordsTable.put("print", Symbol.PRINT);
+    keywordsTable.put("println", Symbol.PRINTLN);
   }
 
+/*
   public class Program {
     private List<Statement> statList;
 
@@ -35,6 +38,21 @@ public class Compiler {
       super();
       this.statList = statList;
     }
+  }*/
+
+  private void program() {
+    this.nextToken();
+    
+    while (token == Symbol.VAR) {
+      this.varList();
+    }
+    
+    while (token == Symbol.ID || token == Symbol.FOR || token == Symbol.PRINT || token == Symbol.PRINTLN
+        || token == Symbol.WHILE || token == Symbol.IF) {
+      this.stat();
+    }
+
+    return;
   }
 
   /*
@@ -64,7 +82,7 @@ public class Compiler {
     if (this.token != Symbol.ID)
       error("Error: expected an identifier.");
 
-    // Pegar o identificador (talvez com getWord)
+    this.getWord();
 
     this.nextToken();
 
@@ -72,8 +90,6 @@ public class Compiler {
       error("Error: expected ';'.");
 
     this.nextToken();
-
-    // Criar objeto da classe Variable
   }
 
   public Compiler(char[] expr) {
@@ -87,9 +103,7 @@ public class Compiler {
       System.out.println(output);
     }
 
-    for (int i = 0; i < this.input.length; i++) {
-      this.nextToken();
-    }
+    this.program();
   }
 
   private void nextToken() {
@@ -285,7 +299,7 @@ public class Compiler {
   }
 
   private void assignStat() {
-    char identifier = this.identifier;
+    this.getWord();
 
     this.nextToken();
 
@@ -294,7 +308,7 @@ public class Compiler {
 
     this.nextToken();
 
-    // Expression
+    this.expr();
 
     if (this.token != Symbol.SEMICOLON)
       error("Error: expected ';'.");
@@ -305,13 +319,13 @@ public class Compiler {
   private void ifStat() {
     this.nextToken();
 
-    // Expression
-    // statList
+    this.expr();
+    this.statList();
 
     this.nextToken();
 
     if (this.token == Symbol.ELSE) {
-      // statList
+      this.statList();
     }
   }
 
@@ -348,7 +362,7 @@ public class Compiler {
     if (this.token != Symbol.LEFT_P)
       error("Error: expected '('.");
 
-    // Expression
+    this.expr();
 
     this.nextToken();
 
@@ -357,14 +371,14 @@ public class Compiler {
 
     this.nextToken();
 
-    // Expression
-    // statList()
+    this.expr();
+    this.statList();
   }
 
   private void printStat() {
     this.nextToken();
 
-    // Expression
+    this.expr();
 
     if (this.token != Symbol.SEMICOLON)
       error("Error: expected ';'.");
@@ -375,7 +389,7 @@ public class Compiler {
   private void printlnStat() {
     this.nextToken();
 
-    // Expression
+    this.expr();
 
     if (this.token != Symbol.SEMICOLON)
       error("Error: expected ';'.");
@@ -383,12 +397,12 @@ public class Compiler {
     this.nextToken();
   }
 
-  // Expr ::= AndExpr [ "||" AndExpr ]
   private void expr() {
     this.andExpr();
 
     if (this.token == Symbol.OR)
       this.andExpr();
+
   }
 
   private void andExpr() {
@@ -408,13 +422,35 @@ public class Compiler {
 
   private void addExpr() {
     this.multExpr();
+
+    while (this.token == Symbol.PLUS || this.token == Symbol.MINUS)
+      this.multExpr();
   }
 
   private void multExpr() {
     this.simpleExpr();
+
+    while (this.token == Symbol.MULT || this.token == Symbol.DIV || this.token == Symbol.MOD)
+      this.simpleExpr();
   }
 
   private void simpleExpr() {
+    if(this.token == Symbol.NUMBER) {
+      this.getNumber();
+    } else  if(this.token == Symbol.ID) {
+      this.getWord();
+    } else if(this.token == Symbol.PLUS) {
+      //aqui tem lógica a mais
+      simpleExpr();
+    } else if(this.token==Symbol.NOT) {
+      //aqui tem lógica a mais
+      simpleExpr();
+    } else if(this.token==Symbol.LEFT_P) {
+      expr();
+      //chama o next token saindo da expr ou tem que chamar aqui?
+      if(this.token!=Symbol.RIGHT_P) 
+        error("Error: expected ')'.");
+    }
 
   }
 
