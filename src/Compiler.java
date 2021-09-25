@@ -5,12 +5,12 @@ import java.util.List;
 import ast.Statement;
 
 public class Compiler {
-  Symbol token;
-  int tokenPos;
+  private Symbol token;
+  private int tokenPos;
 
-  char[] input;
+  private char[] input;
 
-  char identifier;
+  private char identifier;
 
   static private Hashtable<String, Symbol> keywordsTable;
 
@@ -29,8 +29,10 @@ public class Compiler {
     keywordsTable.put("print", Symbol.PRINT);
     keywordsTable.put("println", Symbol.PRINTLN);
   }
+  
+  private int numberValue;
 
-/*
+  /*
   public class Program {
     private List<Statement> statList;
 
@@ -81,8 +83,6 @@ public class Compiler {
 
     if (this.token != Symbol.ID)
       error("Error: expected an identifier.");
-
-    this.getWord();
 
     this.nextToken();
 
@@ -224,7 +224,7 @@ public class Compiler {
   private void getWord() {
     StringBuffer identifier = new StringBuffer();
 
-    while (tokenPos < this.input.length && this.input[tokenPos] != ' ') {
+    while (tokenPos < this.input.length && this.input[tokenPos] != ' ' && Character.isLetter(this.input[this.tokenPos])) {
       identifier.append(this.input[tokenPos]);
       this.tokenPos++;
     }
@@ -240,13 +240,13 @@ public class Compiler {
   private void getNumber() {
     StringBuffer number = new StringBuffer();
 
-    while (tokenPos < this.input.length && this.input[tokenPos] != ' ') {
+    while (tokenPos < this.input.length && this.input[tokenPos] != ' ' && Character.isDigit(this.input[this.tokenPos])) {
       number.append(this.input[tokenPos]);
       this.tokenPos++;
     }
 
     this.token = Symbol.NUMBER;
-    System.out.println(Integer.valueOf(number.toString()));
+    this.numberValue = Integer.valueOf(number.toString());
   }
 
   private void stat() {
@@ -358,20 +358,11 @@ public class Compiler {
 
   private void whileStat() {
     this.nextToken();
-
-    if (this.token != Symbol.LEFT_P)
-      error("Error: expected '('.");
-
+    //A gente entra com o token sendo while?
+    /* WhileStat ::= "while" Expr StatList    */
     this.expr();
-
+    //Tem que chamar mesmo esse nextToken, fica a dúvida aí
     this.nextToken();
-
-    if (this.token != Symbol.RIGHT_P)
-      error("Error: expected ')'.");
-
-    this.nextToken();
-
-    this.expr();
     this.statList();
   }
 
@@ -422,7 +413,6 @@ public class Compiler {
 
   private void addExpr() {
     this.multExpr();
-
     while (this.token == Symbol.PLUS || this.token == Symbol.MINUS)
       this.multExpr();
   }
@@ -435,8 +425,10 @@ public class Compiler {
   }
 
   private void simpleExpr() {
+    this.nextToken();
+    
     if(this.token == Symbol.NUMBER) {
-      this.getNumber();
+      System.out.println(this.numberValue);
     } else  if(this.token == Symbol.ID) {
       this.getWord();
     } else if(this.token == Symbol.PLUS) {
@@ -450,8 +442,10 @@ public class Compiler {
       //chama o next token saindo da expr ou tem que chamar aqui?
       if(this.token!=Symbol.RIGHT_P) 
         error("Error: expected ')'.");
+    } else {
+      error("Error: expected a simpleExpr.");
     }
-
+    this.nextToken();
   }
 
   private void error(String errorMessage) {
