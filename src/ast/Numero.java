@@ -1,9 +1,9 @@
 package ast;
 
-public class Number extends Expr {
+public class Numero extends Expr {
 	private int number;
 
-	public Number(int number) {
+	public Numero(int number) {
 		super();
 		this.number = number;
 	}
