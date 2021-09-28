@@ -1,3 +1,5 @@
+import ast.Program;
+
 public class Main {
   public static void main(String[] args) {
     char[] expr = ("var Int i;\r\n"
@@ -26,11 +28,9 @@ public class Main {
     		+ "").toCharArray();
     
     Compiler compiler = new Compiler(expr);
-    new Program ast = compiler.compile();
+    Program ast = compiler.compile();
 
-	ast.genc();
+	ast.genC();
 
-    if(compiler.token == Symbol.EOF)
-      System.out.print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
   }
 }
