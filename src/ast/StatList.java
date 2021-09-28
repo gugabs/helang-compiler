@@ -1,5 +1,7 @@
 package ast;
 import java.util.List;
+import java.util.Map;
+
 public class StatList extends Stat {
 
 	private List<Stat> listStat;
@@ -11,14 +13,15 @@ public class StatList extends Stat {
 	}
 
 	@Override
-	public void eval() {
+	public void eval( Map<String, Integer> memory ) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void genC() {
-		// TODO Auto-generated method stub
+		//StatList ::= "{" { Stat } "}"
+		listStat.forEach(item-> item.genC());
 
 	}
 

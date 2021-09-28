@@ -1,6 +1,9 @@
 package ast;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
 import lexer.Symbol;
 
 public class CompositeExpr extends Expr {
@@ -26,15 +29,26 @@ public class CompositeExpr extends Expr {
 	}
 
 	@Override
-	public void eval() {
+	public void eval(Map<String, Integer> memory) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void genC() {
-		// TODO Auto-generated method stub
-
+		System.out.print("(");
+		left.genC();
+		if (op != null) {
+			Iterator<Symbol> op_it = op.iterator();
+			Iterator<Expr> expr_it = right.iterator();
+			while (expr_it.hasNext()) {
+				System.out.print(" ");
+				op_it.next().genC();
+				System.out.print(" ");
+				expr_it.next().genC();
+			}
+		}
+		System.out.print(")");
 	}
 
 }
