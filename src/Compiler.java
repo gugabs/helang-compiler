@@ -2,10 +2,11 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import ast.Stat;
 import ast.Statement;
 
 public class Compiler {
-  private Symbol token;
+  public Symbol token;
   private int tokenPos;
 
   private char[] input;
@@ -19,18 +20,23 @@ public class Compiler {
 
     keywordsTable.put("var", Symbol.VAR);
     keywordsTable.put("int", Symbol.INT);
+    keywordsTable.put("Int", Symbol.INT);
     keywordsTable.put("if", Symbol.IF);
     keywordsTable.put("else", Symbol.ELSE);
     keywordsTable.put("not", Symbol.NOT);
     keywordsTable.put("and", Symbol.AND);
     keywordsTable.put("or", Symbol.OR);
     keywordsTable.put("for", Symbol.FOR);
+    keywordsTable.put("in", Symbol.IN);
     keywordsTable.put("while", Symbol.WHILE);
     keywordsTable.put("print", Symbol.PRINT);
     keywordsTable.put("println", Symbol.PRINTLN);
   }
   
   private int numberValue;
+  /**  nome da ï¿½ltima variï¿½vel encontrada no cï¿½digo
+  */
+  private String variableName;
 
   /*
   public class Program {
@@ -42,19 +48,22 @@ public class Compiler {
     }
   }*/
 
-  private void program() {
+  private Program program() {
     this.nextToken();
     
+    List<Stat> statList = new ArrayList<>;
+    Varlist varl;
+    
     while (token == Symbol.VAR) {
-      this.varList();
+      varl = this.varList();
     }
     
     while (token == Symbol.ID || token == Symbol.FOR || token == Symbol.PRINT || token == Symbol.PRINTLN
         || token == Symbol.WHILE || token == Symbol.IF) {
-      this.stat();
+      statList.add(this.stat());
     }
-
-    return;
+    this.nextToken();
+    return new Program(varl, statl);
   }
 
   /*
@@ -75,7 +84,7 @@ public class Compiler {
       error("Error: expected 'var'.");
 
     this.nextToken();
-
+    
     if (this.token != Symbol.INT)
       error("Error: expected 'int'.");
 
@@ -98,21 +107,28 @@ public class Compiler {
   }
 
   public void compile() {
-    for (int i = 0; i < this.input.length; i++) {
+   /* 
+	for (int i = 0; i < this.input.length; i++) {
       String output = String.format("pos[%d]: %c\n", i, this.input[i]);
       System.out.println(output);
     }
+    */
 
-    this.program();
+    return this.program();
   }
-
+  
+  
+  
   private void nextToken() {
     while (this.tokenPos < this.input.length
-        && (this.input[this.tokenPos] == ' ' || this.input[this.tokenPos] == '\r' || this.input[this.tokenPos] == '\n'))
+        && (this.input[this.tokenPos] == ' ' || 
+        this.input[this.tokenPos] == '\r' || this.input[this.tokenPos] == '\n'))
       this.tokenPos++;
 
-    if (this.tokenPos >= input.length)
-      return;
+    if (this.tokenPos >= input.length) {
+      token = Symbol.EOF;
+      return ;
+    }
 
     char currCharacter = this.input[this.tokenPos];
 
@@ -143,53 +159,55 @@ public class Compiler {
         break;
 
       case '=':
-        if (this.input[tokenPos + 1] == '=')
-          token = Symbol.EQUAL;
-        else
-          token = Symbol.ASSIGN;
-
-        this.tokenPos++;
+        if (this.input[tokenPos + 1] == '=') {
+            token = Symbol.EQUAL;
+            this.tokenPos++;          	     	
+        } else {
+            token = Symbol.ASSIGN;      	
+        }
         break;
 
       case '>':
-        if (this.input[tokenPos + 1] == '=')
-          token = Symbol.GREATER_E;
-        else
+        if (this.input[tokenPos + 1] == '=') {
+        	token = Symbol.GREATER_E;
+        	this.tokenPos++;
+      	} else {
           token = Symbol.GREATER;
-
-        this.tokenPos++;
-        break;
+    	}
+         break;
 
       case '<':
-        if (this.input[tokenPos + 1] == '=')
-          token = Symbol.LESS_E;
-        else
-          token = Symbol.LESS;
-
-        this.tokenPos++;
+        if (this.input[tokenPos + 1] == '=') {
+        	 token = Symbol.LESS_E;
+             this.tokenPos++;           	
+        } else {
+        	token = Symbol.LESS;
+	        }
+        
         break;
 
       case '!':
-        if (this.input[tokenPos + 1] == '=')
-          token = Symbol.DIFF;
-        else
-          token = Symbol.NOT;
-
-        this.tokenPos++;
+        if (this.input[tokenPos + 1] == '=') {
+        	token = Symbol.DIFF;
+        	this.tokenPos++;
+        } else {
+        	token = Symbol.NOT;
+        }
+          
         break;
 
       case '&':
-        if (this.input[tokenPos + 1] == '&')
-          token = Symbol.AND;
-
-        this.tokenPos++;
+      	if(this.input[tokenPos + 1] == '&') {  
+    		token = Symbol.AND;	
+    	    this.tokenPos++;
+    	} 	
         break;
 
       case '|':
-        if (this.input[tokenPos + 1] == '|')
-          token = Symbol.OR;
-
-        this.tokenPos++;
+      	if(this.input[tokenPos + 1] == '|') {  
+    		token = Symbol.OR;	
+    	    this.tokenPos++;
+    	} 	
         break;
 
       case '(':
@@ -215,10 +233,24 @@ public class Compiler {
       case ';':
         token = Symbol.SEMICOLON;
         break;
+      
+      case '.':
+    	if(this.input[tokenPos + 1] == '.') {  
+    		token = Symbol.RANGE;	
+    	    this.tokenPos++;
+    	} 	
+        break;
+        
+      case '\0':
+    	  token = Symbol.EOF;
+    	  System.out.print("Terminou programa");
+    	  break;
       }
 
       this.tokenPos++;
     }
+
+    System.out.println(this.token);
   }
 
   private void getWord() {
@@ -230,7 +262,7 @@ public class Compiler {
     }
 
     Symbol value = keywordsTable.get(identifier.toString());
-
+    this.variableName = identifier.toString();
     if (value == null)
       this.token = Symbol.ID;
     else
@@ -249,7 +281,7 @@ public class Compiler {
     this.numberValue = Integer.valueOf(number.toString());
   }
 
-  private void stat() {
+  private Stat stat() {
     switch (this.token) {
     case ID:
       this.assignStat();
@@ -299,11 +331,10 @@ public class Compiler {
   }
 
   private void assignStat() {
-    this.getWord();
 
+    String id = variableName;
     this.nextToken();
-
-    if (this.token != Symbol.EQUAL)
+    if (this.token != Symbol.ASSIGN)
       error("Error: expected '='.");
 
     this.nextToken();
@@ -314,16 +345,19 @@ public class Compiler {
       error("Error: expected ';'.");
 
     this.nextToken();
+    // return new AssignStat(id, e);
   }
 
   private void ifStat() {
     this.nextToken();
 
     this.expr();
+
+    this.nextToken();
     this.statList();
 
     this.nextToken();
-
+ 
     if (this.token == Symbol.ELSE) {
       this.statList();
     }
@@ -333,8 +367,7 @@ public class Compiler {
     this.nextToken();
 
     if (this.token == Symbol.ID) {
-      this.getWord();
-
+      String id = variableName;
       this.nextToken();
 
       if (this.token != Symbol.IN)
@@ -350,6 +383,8 @@ public class Compiler {
       this.nextToken();
 
       this.expr();
+      statList();
+
     } else {
       error("Error: expected an identifier.");
     }
@@ -358,12 +393,12 @@ public class Compiler {
 
   private void whileStat() {
     this.nextToken();
-    //A gente entra com o token sendo while?
     /* WhileStat ::= "while" Expr StatList    */
     this.expr();
-    //Tem que chamar mesmo esse nextToken, fica a dúvida aí
-    this.nextToken();
+
     this.statList();
+    //this.nextToken();
+
   }
 
   private void printStat() {
@@ -392,60 +427,84 @@ public class Compiler {
     this.andExpr();
 
     if (this.token == Symbol.OR)
-      this.andExpr();
-
+    {
+    	this.nextToken();
+    	this.andExpr();
+    }
+    
+    
   }
 
   private void andExpr() {
     this.relExpr();
 
-    if (this.token == Symbol.AND)
-      this.andExpr();
-  }
+    if (this.token == Symbol.AND) {
+    	this.nextToken();
+        this.andExpr();
+    	
+    }
+   }
 
   private void relExpr() {
     this.addExpr();
 
     if (this.token == Symbol.GREATER || this.token == Symbol.GREATER_E || this.token == Symbol.LESS
-        || this.token == Symbol.LESS_E || this.token == Symbol.EQUAL || this.token == Symbol.DIFF)
-      this.addExpr();
+        || this.token == Symbol.LESS_E || this.token == Symbol.EQUAL || this.token == Symbol.DIFF) {
+    	this.nextToken();
+    	// this.addExpr();
+  	}
   }
 
   private void addExpr() {
     this.multExpr();
-    while (this.token == Symbol.PLUS || this.token == Symbol.MINUS)
-      this.multExpr();
+    
+    while (this.token == Symbol.PLUS || this.token == Symbol.MINUS) {
+    	this.nextToken();
+    	this.multExpr();
+    }
+     
   }
 
   private void multExpr() {
     this.simpleExpr();
 
-    while (this.token == Symbol.MULT || this.token == Symbol.DIV || this.token == Symbol.MOD)
-      this.simpleExpr();
-  }
+    while (this.token == Symbol.MULT || this.token == Symbol.DIV || this.token == Symbol.MOD){
+    	this.nextToken();
+    	 this.simpleExpr();
+   }
+      }
 
   private void simpleExpr() {
-    this.nextToken();
-    
+	  
+	  
     if(this.token == Symbol.NUMBER) {
       System.out.println(this.numberValue);
+      this.nextToken();
     } else  if(this.token == Symbol.ID) {
       this.getWord();
+      this.nextToken();
     } else if(this.token == Symbol.PLUS) {
-      //aqui tem lógica a mais
-      simpleExpr();
+    	this.nextToken();
+    	simpleExpr();
     } else if(this.token==Symbol.NOT) {
-      //aqui tem lógica a mais
-      simpleExpr();
-    } else if(this.token==Symbol.LEFT_P) {
+    	this.nextToken();
+    	simpleExpr();
+    }  else if(this.token==Symbol.MINUS) {
+    	this.nextToken();
+    	simpleExpr();
+    }  else if(this.token==Symbol.PLUS) {
+    	this.nextToken();
+    	simpleExpr();
+    }  else if(this.token==Symbol.LEFT_P) {
+      this.nextToken();
       expr();
-      //chama o next token saindo da expr ou tem que chamar aqui?
+
       if(this.token!=Symbol.RIGHT_P) 
         error("Error: expected ')'.");
+      this.nextToken();
     } else {
       error("Error: expected a simpleExpr.");
     }
-    this.nextToken();
   }
 
   private void error(String errorMessage) {
