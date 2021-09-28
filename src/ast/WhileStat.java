@@ -13,14 +13,24 @@ public class WhileStat extends Stat {
 
 	@Override
 	public void eval() {
-		// TODO Auto-generated method stub
-
+		
+		while(right.eval())
+			statList.eval();
+		
 	}
 
 	@Override
 	public void genC() {
-		// TODO Auto-generated method stub
 
+		System.out.print("while(");
+
+		right.genC();
+
+		System.out.println(") {");
+
+		statList.genC();
+
+		System.out.println("}");
 	}
 
 }

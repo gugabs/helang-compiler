@@ -26,7 +26,10 @@ public class Main {
     		+ "").toCharArray();
     
     Compiler compiler = new Compiler(expr);
-    compiler.compile();
+    new Program ast = compiler.compile();
+
+	ast.genc();
+
     if(compiler.token == Symbol.EOF)
       System.out.print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
   }

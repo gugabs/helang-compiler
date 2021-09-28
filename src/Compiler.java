@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import ast.Stat;
 import ast.Statement;
 
 public class Compiler {
@@ -33,7 +34,7 @@ public class Compiler {
   }
   
   private int numberValue;
-  /**  nome da última variável encontrada no código
+  /**  nome da ï¿½ltima variï¿½vel encontrada no cï¿½digo
   */
   private String variableName;
 
@@ -47,19 +48,22 @@ public class Compiler {
     }
   }*/
 
-  private void program() {
+  private Program program() {
     this.nextToken();
     
+    List<Stat> statList = new ArrayList<>;
+    Varlist varl;
+    
     while (token == Symbol.VAR) {
-      this.varList();
+      varl = this.varList();
     }
     
     while (token == Symbol.ID || token == Symbol.FOR || token == Symbol.PRINT || token == Symbol.PRINTLN
         || token == Symbol.WHILE || token == Symbol.IF) {
-      this.stat();
+      statList.add(this.stat());
     }
     this.nextToken();
-    return;
+    return new Program(varl, statl);
   }
 
   /*
@@ -110,7 +114,7 @@ public class Compiler {
     }
     */
 
-    this.program();
+    return this.program();
   }
   
   
@@ -277,7 +281,7 @@ public class Compiler {
     this.numberValue = Integer.valueOf(number.toString());
   }
 
-  private void stat() {
+  private Stat stat() {
     switch (this.token) {
     case ID:
       this.assignStat();
