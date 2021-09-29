@@ -29,9 +29,8 @@ public class CompositeExpr extends Expr {
 	}
 
 	@Override
-	public void eval(Map<String, Integer> memory) {
-		// TODO Auto-generated method stub
-
+	public int eval(Map<String, Integer> memory) {
+		return 1;
 	}
 
 	@Override

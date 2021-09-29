@@ -11,9 +11,9 @@ public class PrintStat extends Stat {
 	}
 
 	@Override
-	public void eval( Map<String, Integer> memory ) {
+	public int eval( Map<String, Integer> memory ) {
 		// TODO Auto-generated method stub
-
+		return 1;
 	}
 
 	@Override
