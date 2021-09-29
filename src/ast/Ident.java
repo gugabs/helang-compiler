@@ -1,9 +1,10 @@
 package ast;
 
+import java.util.Map;
+
 public class Ident extends Expr {
 
-	private String name;
-	//private int value; Ver memory que o Zé usa
+	private static String name;
 	
 	public Ident(String name) {
 		super();
@@ -12,16 +13,20 @@ public class Ident extends Expr {
 
 	
 	@Override
-	public void eval() {
-		// TODO Auto-generated method stub
-
+	public int eval(Map<String, Integer> memory) {
+		return memory.get(name);
 	}
 
 
 	@Override
 	public void genC() {
-		// TODO Auto-generated method stub
+		System.out.print(name);
+	}
 
+
+	public static String getName() {
+		// TODO Auto-generated method stub
+		return name;
 	}
 
 }

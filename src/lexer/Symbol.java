@@ -45,4 +45,14 @@ public enum Symbol {
     @Override
   public String toString() { return name; }
     public String name;
+
+	public void eval() {
+		
+		
+	}
+	
+	public void genC() {
+		System.out.print(name);
+		
+	}
 }

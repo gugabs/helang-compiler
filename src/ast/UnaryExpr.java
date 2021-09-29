@@ -1,4 +1,6 @@
 package ast;
+import java.util.Map;
+
 import lexer.Symbol;
 
 public class UnaryExpr extends Expr {
@@ -10,15 +12,15 @@ public class UnaryExpr extends Expr {
         this.op = op;
     }
 	@Override
-	public void eval() {
+	public void eval(Map<String, Integer> memory) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void genC() {
-		// TODO Auto-generated method stub
-		
+		System.out.print(this.op);
+		expr.genC();
 	}
 
 }

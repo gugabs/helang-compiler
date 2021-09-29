@@ -1,5 +1,7 @@
 package ast;
 
+import java.util.Map;
+
 public class AssignStat extends Stat {
 
 	private Ident id;
@@ -13,15 +15,21 @@ public class AssignStat extends Stat {
 	}
 
 	@Override
-	public void eval() {
-		// TODO Auto-generated method stub
-
+	public void eval( Map<String, Integer> memory ) {
+		//int e = expr.eval(memory);
+		//memory.put(id, e);
+		
 	}
 
 	@Override
 	public void genC() {
-		// TODO Auto-generated method stub
-
+		/*
+		 * AssignStat ::= Ident "=" Expr ";"
+		 * */
+		id.genC();
+		System.out.print(" = ");
+		expr.genC();
+		System.out.println("; ");
 	}
 
 }

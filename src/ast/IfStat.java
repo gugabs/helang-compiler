@@ -1,5 +1,7 @@
 package ast;
 
+import java.util.Map;
+
 public class IfStat extends Stat {
 
 	private Expr left;
@@ -24,7 +26,7 @@ public class IfStat extends Stat {
 	
 	
 	@Override
-	public void eval() {
+	public void eval( Map<String, Integer> memory ) {
 		// TODO Auto-generated method stub
 
 	}
@@ -33,8 +35,22 @@ public class IfStat extends Stat {
 
 	@Override
 	public void genC() {
-		// TODO Auto-generated method stub
-
+		/*
+		 * "if" Expr StatList ["else" StatList ]
+		 * */
+		//if() {} else {}
+		System.out.print("if (");
+		left.genC();
+		System.out.println(") {");
+		statList.genC();
+		if(statElse == null) {
+			System.out.println("}");
+		} else {
+			System.out.print("} else {");
+			statElse.genC();
+			System.out.println("}");
+		}
+			
 	}
 
 }

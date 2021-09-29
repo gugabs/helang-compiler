@@ -12,7 +12,18 @@ public class VarList {
 	}
 	
 	public void eval() {
+		
+		
 	}
+	
 	public void genC() {
+		/*
+		 * VarList ::= { "var" Int Ident ";" }
+		 * */
+		id.forEach(item -> {
+			System.out.print("int ");
+			item.genC();
+			System.out.println(";");
+		});
 	}
 }

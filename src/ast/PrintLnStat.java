@@ -1,5 +1,7 @@
 package ast;
 
+import java.util.Map;
+
 public class PrintLnStat extends Stat {
 
 	private Expr expr;
@@ -14,7 +16,7 @@ public class PrintLnStat extends Stat {
 	
 	
 	@Override
-	public void eval() {
+	public void eval( Map<String, Integer> memory ) {
 		// TODO Auto-generated method stub
 
 	}
@@ -22,9 +24,10 @@ public class PrintLnStat extends Stat {
 
 
 	@Override
-	public void genC() {
-		// TODO Auto-generated method stub
-
+	public void genC() { 
+		System.out.print("printf(\" %d \\n\" ,");
+		expr.genC();
+		System.out.println(");");
 	}
 
 }

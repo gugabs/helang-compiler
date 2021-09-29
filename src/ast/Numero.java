@@ -1,5 +1,7 @@
 package ast;
 
+import java.util.Map;
+
 public class Numero extends Expr {
 	private int number;
 
@@ -9,15 +11,14 @@ public class Numero extends Expr {
 	}
 
 	@Override
-	public void eval() {
+	public void eval(Map<String, Integer> memory) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void genC() {
-		// TODO Auto-generated method stub
-		
+		System.out.print(number);
 	}
 
 	

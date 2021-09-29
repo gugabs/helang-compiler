@@ -13,6 +13,7 @@ import ast.PrintStat;
 import ast.Stat;
 import ast.StatList;
 import ast.Statement;
+import ast.UnaryExpr;
 import ast.VarList;
 import ast.WhileStat;
 import ast.Program;
@@ -59,7 +60,10 @@ public class Compiler {
 	}
 
 	public Program compile() {
-		return this.program();
+		Program p = program();
+		if(token!= Symbol.EOF)
+			error("Fim do arquivo não esperado");
+		return p;
 	}
 
 	private Program program() {
@@ -466,10 +470,12 @@ public class Compiler {
 		List<Symbol> op = new ArrayList<Symbol>();
 		List<Expr> right = new ArrayList<Expr>();
 
-		while (this.token == Symbol.PLUS || this.token == Symbol.MINUS) {
-			op.add(this.token);
-			this.nextToken();
-			right.add(this.multExpr());
+		if(this.token == Symbol.PLUS || this.token == Symbol.MINUS) {
+			while (this.token == Symbol.PLUS || this.token == Symbol.MINUS) {
+				op.add(this.token);
+				this.nextToken();
+				right.add(this.multExpr());	
+			}
 			left = new CompositeExpr(left, op, right);
 		}
 		return left;
@@ -480,11 +486,14 @@ public class Compiler {
 
 		List<Symbol> op = new ArrayList<Symbol>();
 		List<Expr> right = new ArrayList<Expr>();
-
-		while (this.token == Symbol.MULT || this.token == Symbol.DIV || this.token == Symbol.MOD) {
-			op.add(this.token);
-			this.nextToken();
-			right.add(this.simpleExpr());
+		
+		//Adicionei um if, para dar add na lista durante o while, e só depois colocar left como recebendo a lista 
+		if(this.token == Symbol.MULT || this.token == Symbol.DIV || this.token == Symbol.MOD) {
+			while (this.token == Symbol.MULT || this.token == Symbol.DIV || this.token == Symbol.MOD) {
+				op.add(this.token);
+				this.nextToken();
+				right.add(this.simpleExpr());
+			}
 			left = new CompositeExpr(left, op, right);
 		}
 		return left;
@@ -496,21 +505,12 @@ public class Compiler {
 			e = new Numero(numberValue);
 			this.nextToken();
 		} else if (this.token == Symbol.ID) {
-			// this.getWord();
 			e = new Ident(variableName);
 			this.nextToken();
-		} else if (this.token == Symbol.PLUS) {
+		} else if (this.token == Symbol.MINUS || this.token == Symbol.NOT || this.token == Symbol.PLUS) {
+			Symbol guardar = this.token;
 			this.nextToken();
-			e = simpleExpr();
-		} else if (this.token == Symbol.NOT) {
-			this.nextToken();
-			e = simpleExpr();
-		} else if (this.token == Symbol.MINUS) {
-			this.nextToken();
-			e = simpleExpr();
-		} else if (this.token == Symbol.PLUS) {
-			this.nextToken();
-			e = simpleExpr();
+			e = new UnaryExpr(simpleExpr(), guardar);
 		} else if (this.token == Symbol.LEFT_P) {
 			this.nextToken();
 			e = expr();
