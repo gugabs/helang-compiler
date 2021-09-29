@@ -12,9 +12,9 @@ public class UnaryExpr extends Expr {
         this.op = op;
     }
 	@Override
-	public void eval(Map<String, Integer> memory) {
+	public int eval(Map<String, Integer> memory) {
 		// TODO Auto-generated method stub
-
+		return 1;
 	}
 
 	@Override

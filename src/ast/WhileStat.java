@@ -14,10 +14,10 @@ public class WhileStat extends Stat {
 	}
 
 	@Override
-	public void eval( Map<String, Integer> memory ) {
+	public int eval( Map<String, Integer> memory ) {
 
 		//while(right.eval()) statList.eval();
-		
+		return 1;
 	}
 
 	@Override

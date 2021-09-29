@@ -8,10 +8,7 @@ public class ForStat extends Stat {
 	private Expr left;
 	private Expr right;
 	private StatList statList;
-	
-	
-	
-	
+
 	public ForStat(Ident id, Expr left, Expr right, StatList statList) {
 		super();
 		this.id = id;
@@ -21,29 +18,26 @@ public class ForStat extends Stat {
 	}
 
 	@Override
-	public int eval( Map<String, Integer> memory ) {
+	public void eval(Map<String, Integer> memory) {
+
+		String identName = Ident.getName();
+
+		if (memory.containsKey(identName))
+			throw new RuntimeException("Error: identifier wasn't declared inside the for statement.");
+
+		int leftVal = left.eval(memory);
 		
-        String id_name = ident.eval();
-        
-        if (memory.containsKey(id))
-            throw new RuntimeException("Identifier wasn't declared inside the for statement");
+		memory.put(identName, leftVal);
 
-        int value = left.eval(memory);
-        memory.put(id_name,  value);
+		if (left.eval(memory) > right.eval(memory))
+			throw new RuntimeException("Error: the expression to the left should be less than or equal to the right expression");
 
-        if (left.eval(memory) > right.eval(memory))
-            throw new RuntimeException("initial value should be less than or equal end value");
+		while (memory.get(identName) <= right.eval(memory))
+			memory.put(identName, memory.get(identName) + 1);
 
-        for (; memory.get(id_name) <= right.eval(memory); memory.put(id_name,  memory.get(id_name) + 1))
-            statList.eval(memory);
-
-        memory.remove(id_name);
-    
-	
-	return 1;
+		memory.remove(identName);
 	}
 
-	
 	@Override
 	public void genC() {
 		System.out.print("for(");
