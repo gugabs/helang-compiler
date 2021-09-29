@@ -15,10 +15,11 @@ public class AssignStat extends Stat {
 	}
 
 	@Override
-	public int eval( Map<String, Integer> memory ) {
-		//int e = expr.eval(memory);
-		//memory.put(id, e);
-		return 1;
+	public void eval( Map<String, Integer> memory ) {
+		int e = expr.eval(memory);
+		String identName = Ident.getName();
+		if(!memory.containsKey(identName))
+			memory.put(identName, e);
 	}
 
 	@Override

@@ -11,9 +11,9 @@ public class PrintStat extends Stat {
 	}
 
 	@Override
-	public int eval( Map<String, Integer> memory ) {
-		// TODO Auto-generated method stub
-		return 1;
+	public void eval( Map<String, Integer> memory ) {
+		if(expr != null) 
+			System.out.print(expr.eval(memory));	
 	}
 
 	@Override

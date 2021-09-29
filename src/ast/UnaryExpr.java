@@ -13,8 +13,24 @@ public class UnaryExpr extends Expr {
     }
 	@Override
 	public int eval(Map<String, Integer> memory) {
-		// TODO Auto-generated method stub
-		return 1;
+		int eval = 0;
+		if(op == Symbol.NOT) {
+			eval = expr.eval(memory);
+			if(eval!=0) {
+				eval = 0;
+			} else {
+				eval = 1;
+			}
+		} else if (op == Symbol.PLUS){
+			eval = +expr.eval(memory);
+			return eval;
+		} else if (op == Symbol.MINUS){
+			eval = -expr.eval(memory);
+		} else {
+			throw new RuntimeException("Unknow");
+		}
+
+		return eval;
 	}
 
 	@Override

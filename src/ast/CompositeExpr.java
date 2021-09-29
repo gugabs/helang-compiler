@@ -12,10 +12,6 @@ public class CompositeExpr extends Expr {
 	private List<Symbol> op;
 	private List<Expr> right;
 
-	/*
-	 * Três construtores: Se tiver apenas left. Se right tiver só um. Se tiver mais
-	 * de uma expr no lado direito
-	 */
 	public CompositeExpr(Expr left) {
 		super();
 		this.left = left;
@@ -30,7 +26,57 @@ public class CompositeExpr extends Expr {
 
 	@Override
 	public int eval(Map<String, Integer> memory) {
-		return 1;
+		int resultado = left.eval(memory);
+		
+		if (op != null) {
+			Iterator<Symbol> op_it = op.iterator();
+			Iterator<Expr> expr_it = right.iterator();	
+			
+			while (expr_it.hasNext()) {
+				Symbol currOp = op_it.next();
+				
+				if (currOp == Symbol.PLUS) {
+					resultado = resultado + expr_it.next().eval(memory);
+				} else if (currOp == Symbol.MINUS) {
+					resultado = resultado - expr_it.next().eval(memory);
+				} else if(currOp == Symbol.MULT) {
+					resultado = resultado * expr_it.next().eval(memory);
+ 				} else if(currOp == Symbol.DIV) {
+ 					resultado = resultado / expr_it.next().eval(memory);
+				} else if(currOp == Symbol.MOD) {
+					resultado = resultado % expr_it.next().eval(memory);
+				} else if(currOp == Symbol.GREATER) {
+					resultado = resultado > expr_it.next().eval(memory) ? 1 : 0;
+				} else if(currOp == Symbol.GREATER_E) {
+					resultado = resultado >= expr_it.next().eval(memory) ? 1 : 0;
+				} else if(currOp == Symbol.LESS) {
+					resultado = resultado < expr_it.next().eval(memory) ? 1 : 0;
+				} else if(currOp == Symbol.LESS_E) {
+					resultado = resultado <= expr_it.next().eval(memory) ? 1 : 0;
+				} else if(currOp == Symbol.DIFF) {
+					resultado = resultado != expr_it.next().eval(memory) ? 1 : 0;
+				} else if(currOp == Symbol.EQUAL) {
+					resultado = resultado == expr_it.next().eval(memory) ? 1 : 0;
+				} else if(currOp == Symbol.AND) {
+					if(resultado != 0 && expr_it.next().eval(memory) != 0)
+						resultado = 1;
+					else
+						resultado = 0;
+				} else if(currOp == Symbol.OR) {
+					if(resultado != 0 || expr_it.next().eval(memory) != 0)
+						resultado = 1;
+					else
+						resultado = 0;
+				} else {
+					throw new RuntimeException("Internal error in Composite Eval");
+				}
+
+				expr_it.next().eval(memory);
+			}
+			
+		}
+		
+		return resultado;
 	}
 
 	@Override
