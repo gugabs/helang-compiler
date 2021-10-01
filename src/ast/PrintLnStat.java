@@ -25,7 +25,7 @@ public class PrintLnStat extends Stat {
 
 	@Override
 	public void genC() { 
-		System.out.print("printf(\" %d \\n\" ,");
+		System.out.print("printf(\"%d\\n\", ");
 		expr.genC();
 		System.out.println(");");
 	}

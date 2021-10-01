@@ -1,4 +1,5 @@
 package main;
+
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -13,7 +14,6 @@ import ast.PrintLnStat;
 import ast.PrintStat;
 import ast.Stat;
 import ast.StatList;
-import ast.Statement;
 import ast.UnaryExpr;
 import ast.VarList;
 import ast.WhileStat;
@@ -36,7 +36,6 @@ public class Compiler {
 
 		keywordsTable.put("var", Symbol.VAR);
 		keywordsTable.put("int", Symbol.INT);
-		keywordsTable.put("Int", Symbol.INT);
 		keywordsTable.put("if", Symbol.IF);
 		keywordsTable.put("else", Symbol.ELSE);
 		keywordsTable.put("not", Symbol.NOT);
@@ -256,8 +255,9 @@ public class Compiler {
 			this.tokenPos++;
 		}
 
-		Symbol value = keywordsTable.get(identifier.toString());
+		Symbol value = keywordsTable.get(identifier.toString().toLowerCase());
 		this.variableName = identifier.toString();
+		
 		if (value == null)
 			this.token = Symbol.ID;
 		else
@@ -341,11 +341,7 @@ public class Compiler {
 
 		Expr e = this.expr();
 
-		this.nextToken();
-
 		StatList sl = this.statList();
-
-		this.nextToken();
 
 		if (this.token == Symbol.ELSE) {
 			StatList listElse = this.statList();

@@ -1,4 +1,5 @@
 package main;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -6,40 +7,29 @@ import ast.Program;
 
 public class Main {
   public static void main(String[] args) {
-    char[] expr = ("var Int i;\r\n"
-    		+ "var Int soma;\r\n"
-    		+ "var Int n;\r\n"
-    		+ "soma = 0;\r\n"
-    		+ "i = 0;\r\n"
-    		+ "while i < n { \r\n"
-    		+ "  soma = soma + 1;\r\n"
-    		+ "}\r\n"
-    		+ "print soma;\r\n"
-    		+ "").toCharArray();
-    
+    char[] expr = ("var Int i; i = 40; while i < 10 { i = i + 1; println i; } println i;")
+            .toCharArray();
 
     Compiler compiler = new Compiler(expr);
     Program ast = compiler.compile();
     Map<String, Integer> memory = new HashMap<>();
-    
+
     if (args.length == 0)
-        error("Input length is zero");
-     switch (args[0]) {
-         case "-gen" -> {
-        	ast.genC();
-         }
-         case "-run" -> {
-       	    ast.eval();
-         }
-         default -> {
-        	 error("Error when reading input arguments");
-         }
-        	 
-     }
-
+      error("Input length is zero");
+    switch (args[0]) {
+    case "-gen" -> {
+      ast.genC();
+    }
+    case "-run" -> {
+      ast.eval(memory);
+    }
+    default -> {
+      error("Error when reading input arguments");
+    }
+    }
   }
 
-     private static void error(String errorMessage) {
-    	 throw new RuntimeException(errorMessage);
-	}
+  private static void error(String errorMessage) {
+    throw new RuntimeException(errorMessage);
   }
+}
