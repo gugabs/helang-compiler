@@ -14,7 +14,7 @@ public class VarList {
 
   public void eval(Map<String, Integer> memory) {
     id.forEach(identifier -> {
-      if (memory.containsKey(identifier))
+      if (memory.containsKey(identifier.getName()))
         throw new RuntimeException("Error: duplicated identifier.");
     });
   }

@@ -21,7 +21,6 @@ public class StatList extends Stat {
 
   @Override
   public void genC() {
-    // StatList ::= "{" { Stat } "}"
     listStat.forEach(item -> item.genC());
   }
 }

@@ -22,7 +22,6 @@ public class Ident extends Expr {
   }
 
   public String getName() {
-    // TODO Auto-generated method stub
     return name;
   }
 }

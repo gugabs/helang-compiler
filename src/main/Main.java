@@ -1,14 +1,16 @@
 package main;
 
 import java.util.HashMap;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Map;
+import java.util.Scanner;
 
 import ast.Program;
 
 public class Main {
   public static void main(String[] args) {
-    char[] expr = ("var Int i; i = 40; while i < 10 { i = i + 1; println i; } println i;")
-            .toCharArray();
+    char[] expr = readFile(args[1]);
 
     Compiler compiler = new Compiler(expr);
     Program ast = compiler.compile();
@@ -27,6 +29,25 @@ public class Main {
       error("Error when reading input arguments");
     }
     }
+  }
+
+  private static char[] readFile(String filePath) {
+    StringBuffer input = new StringBuffer();
+
+    try {
+      File programInput = new File(filePath);
+      Scanner reader = new Scanner(programInput);
+      while (reader.hasNextLine()) {
+        String data = reader.nextLine();
+        input.append(data);
+      }
+      reader.close();
+    } catch (FileNotFoundException e) {
+      System.out.println("Error: file not found.");
+      e.printStackTrace();
+    }
+
+    return input.toString().toCharArray();
   }
 
   private static void error(String errorMessage) {
