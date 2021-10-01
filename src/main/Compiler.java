@@ -78,7 +78,7 @@ public class Compiler {
 		}
 
 		VarList varl = new VarList(identList);
-
+		
 		while (token == Symbol.ID || token == Symbol.FOR || token == Symbol.PRINT || token == Symbol.PRINTLN
 				|| token == Symbol.WHILE || token == Symbol.IF) {
 			statList.add(this.stat());
@@ -245,7 +245,6 @@ public class Compiler {
 			this.tokenPos++;
 		}
 
-		System.out.println(this.token);
 	}
 
 	private void getWord() {
@@ -463,6 +462,7 @@ public class Compiler {
 			left = new CompositeExpr(left, op, right);
 		}
 		return left;
+
 	}
 
 	private Expr addExpr() {
