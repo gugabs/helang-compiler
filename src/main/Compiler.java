@@ -110,8 +110,8 @@ public class Compiler {
   }
 
   private void nextToken() {
-    while (this.tokenPos < this.input.length
-        && (this.input[this.tokenPos] == ' ' || this.input[this.tokenPos] == '\r' || this.input[this.tokenPos] == '\n'))
+    while (this.tokenPos < this.input.length && (this.input[this.tokenPos] == ' ' || this.input[this.tokenPos] == '\r'
+        || this.input[this.tokenPos] == '\n' || this.input[this.tokenPos] == '\t'))
       this.tokenPos++;
 
     if (this.tokenPos >= input.length) {
@@ -339,6 +339,7 @@ public class Compiler {
     StatList sl = this.statList();
 
     if (this.token == Symbol.ELSE) {
+      this.nextToken();
       StatList listElse = this.statList();
       return new IfStat(e, sl, listElse);
     }
@@ -377,11 +378,9 @@ public class Compiler {
 
   private WhileStat whileStat() {
     this.nextToken();
-    /* WhileStat ::= "while" Expr StatList */
     Expr e = this.expr();
-
     StatList sl = this.statList();
-    // this.nextToken();
+    
     return new WhileStat(e, sl);
   }
 

@@ -31,6 +31,7 @@ public class ForStat extends Stat {
           "Error: the expression to the left should be less than or equal to the right expression");
 
     while (memory.get(identName) <= right.eval(memory)) {
+      statList.eval(memory);
       int next = memory.get(identName) + 1;
       memory.put(identName, next);
     }
@@ -40,7 +41,7 @@ public class ForStat extends Stat {
 
   @Override
   public void genC() {
-    System.out.print("for(");
+    System.out.print("for(int ");
     id.genC();
     System.out.print(" = ");
     left.genC();
